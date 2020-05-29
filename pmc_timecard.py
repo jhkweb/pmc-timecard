@@ -68,7 +68,7 @@ template = openpyxl.load_workbook(template_path, read_only=False)
 input_row_index = 3
 driving = False
 daily_hours = 0
-temp_task_date = datetime.now()
+temp_task_date = start_date
 previous_row_emp = ''
 
 for index, row in data.iterrows():
