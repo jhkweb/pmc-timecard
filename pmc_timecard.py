@@ -1,6 +1,7 @@
 import pandas
 import openpyxl
 from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.styles.protection import Protection
 import os
 import csv
 from datetime import datetime, timedelta
@@ -93,6 +94,15 @@ for index, row in data.iterrows():
         try:
             time_ws['G{}'.format(input_row_index + 1)] = '= SUM(G3:G{})'.format(input_row_index)
             time_ws['F{}'.format(input_row_index + 1)].value = 'Total Hours'
+            time_ws.protection.sheet = True
+            columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']
+            for col in columns:
+                if col == 'K' or col == 'L':
+                    for i in range(3, input_row_index + 32):
+                        time_ws['{}{}'.format(col, i)].protection = Protection(locked=False)
+                else:
+                    for i in range(input_row_index + 2, input_row_index + 32):
+                        time_ws['{}{}'.format(col, i)].protection = Protection(locked=False)
             timecard.save(filename)
         except NameError as e:
             print(e)
