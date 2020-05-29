@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import holidays
 import dropbox
 from shutil import copyfile
+import ad_query
 
 
 dbx = dropbox.Dropbox(os.environ['DBACCESSTOKEN'])
@@ -37,12 +38,17 @@ def get_holiday_dates():
 
 
 def new_timecard(filename):
-    # future, implement AD to get department roles vs. provided csv
-    tech_roles = csv.reader(open('techroles.csv'), delimiter=',')
+    # check AD for user title, fall back to csv if not found
     role = "UNKNOWN"
-    for r in tech_roles:
-        if r[0] == filename:
-            role = r[1]
+    title = ad_query.get_user_title(filename)
+    if title:
+        title = title.replace(' Service Technician', '').strip()
+        role = title
+    else:
+        tech_roles = csv.reader(open('techroles.csv'), delimiter=',')
+        for r in tech_roles:
+            if r[0] == filename:
+                role = r[1]
     # need to implement DropBox api to upload files vs. saving them into local DropBox mapped folder
     # save_dir = r'C:/Users/cspaulding/Dropbox (JH Kelly)/Personal/Timecards/{}/{}'.format(role, start_date.strftime("%m-%d-%Y"))
     save_dir = r'C:/Temp/Timecards/{}/{}'.format(role, start_date.strftime("%m-%d-%Y"))
