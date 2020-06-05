@@ -62,10 +62,15 @@ def new_timecard(tech_name, date):
         elif 'Facilities' in title:
             role = 'Facilities'
     else:
-        tech_roles = csv.reader(open('/tmp/FSUsers.csv'), delimiter=',')
-        for r in tech_roles:
-            if r[1].replace('  ', ' ') == tech_name:
-                role = r[4]
+        tech_roles = csv.reader(open('tmp/FSUsers.csv'), delimiter=',')
+        for i, row in enumerate(tech_roles):
+            if i == 0:
+                dept_col_index = row.index('User_Data_DEPT')
+                tech_col_index = row.index('User_Name')
+                continue
+            if row[tech_col_index].replace('  ', ' ') == tech_name.replace('  ', ' '):
+                role = row[dept_col_index]
+                break
     # need to implement DropBox api to upload files vs. saving them into local DropBox mapped folder
     # save_dir = r'C:/Users/cspaulding/Dropbox (JH Kelly)/Personal/Timecards/{}/{}'.format(role, filename)
     save_dir = r'/tmp/Timecards/{}/{}'.format(role, tech_name)
