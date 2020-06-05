@@ -1,5 +1,4 @@
-openpyxl
-dropbox
 holidays
-pyad
 pandas
+dropbox
+openpyxl
