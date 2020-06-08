@@ -40,39 +40,21 @@ def upload_to_dropbox(dbx, source, destination):
 
 
 def new_timecard(tech_name, date):
-    # check AD for user title, fall back to csv if not found
     role = '_ERROR_'
     last_name = tech_name.split(' ')[1]
-    # title = ad_query.get_user_title(tech_name)
-    title = None
-    if title:
-        title = title.replace(' Service Technician', '').strip()
-        if 'Electric' in title:
-            role = 'Electrical'
-        elif 'HVAC' in title:
-            role = 'HVAC'
-        elif 'Lighting' in title:
-            role = 'Lighting'
-        elif 'Lt Commercial' in title:
-            role = 'Lt Commercial'
-        elif 'Excavator' in title or 'Drain Cleaner' in title or 'Plumbing' in title:
-            role = 'Plumbing'
-        elif 'Refrigeration' in title:
-            role = 'Refrigeration'
-        elif 'Facilities' in title:
-            role = 'Facilities'
-    else:
-        tech_roles = csv.reader(open('tmp/FSUsers.csv'), delimiter=',')
-        for i, row in enumerate(tech_roles):
-            if i == 0:
-                dept_col_index = row.index('User_Data_DEPT')
+    tech_roles = csv.reader(open('tmp/FSUsers.csv'), delimiter=',')
+    for i, row in enumerate(tech_roles):
+        if i == 0:
+            try:
                 tech_col_index = row.index('User_Name')
-                continue
-            if row[tech_col_index].replace('  ', ' ') == tech_name.replace('  ', ' '):
-                role = row[dept_col_index]
+                dept_col_index = row.index('User_Data_DEPT')
+            except ValueError:
+                print('no tech/dept column')
                 break
-    # need to implement DropBox api to upload files vs. saving them into local DropBox mapped folder
-    # save_dir = r'C:/Users/cspaulding/Dropbox (JH Kelly)/Personal/Timecards/{}/{}'.format(role, filename)
+            continue
+        if row[tech_col_index].replace('  ', ' ') == tech_name.replace('  ', ' '):
+            role = row[dept_col_index]
+            break
     save_dir = r'/tmp/Timecards/{}/{}'.format(role, tech_name)
     if not os.path.exists(save_dir):
         print('Creating Sub Dir: {}'.format(save_dir))
